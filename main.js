@@ -19,6 +19,7 @@ function setup() {
 function draw() {
     image(video, 0, 0, 480, 380);
     if (status1 != "") {
+        objectDetector.detect(video, gotResult);
         for (i = 0; i < object.length; i++) {
             percent = floor(object[i].confidence * 100);
             var d = random(100, 255);
@@ -30,9 +31,18 @@ function draw() {
             stroke(d, e, f);
             strokeWeight(4);
             rect(object[i].x, object[i].y, object[i].width, object[i].height);
-            if (object[i].label != "person") {
-                play(alert1);
+            if (object[i].label == "person") {
+                alert1.stop();
+                document.getElementById("status").innerHTML = "Baby Found";
             }
+            else {
+                alert1.play();
+                document.getElementById("status").innerHTML = "Baby Not Found";
+            }
+        }
+        if (object.length == 0) {
+            alert1.play();
+            document.getElementById("status").innerHTML = "Baby Not Found";
         }
     }
 }
@@ -42,7 +52,7 @@ function draw() {
 function modelLoaded() {
     console.log("Model Loaded!")
     status1 = true;
-    objectDetector.detect(video, gotResult);
+
 }
 
 function gotResult(error, result) {
